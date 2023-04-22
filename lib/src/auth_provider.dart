@@ -1,0 +1,4 @@
+enum AuthProvider {
+  apple,
+  google,
+}

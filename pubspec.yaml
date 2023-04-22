@@ -1,0 +1,32 @@
+name: query_stack_firebase_authentication
+description: Firebase Authentication for Query_Stack
+version: 1.0.0
+homepage: https://github.com/JCKodel/query_stack_firebase_authentication
+
+environment:
+  sdk: ">=2.19.6 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  adaptive_dialog: ^1.8.3
+  crypto: ^3.0.2
+  device_info_plus: ^8.2.0
+  firebase_analytics: ^10.2.1
+  firebase_app_installations: ^0.2.2+1
+  firebase_auth: ^4.4.2
+  firebase_core: ^2.10.0
+  flutter:
+    sdk: flutter
+  freezed_annotation: ^2.2.0
+  google_sign_in: ^6.1.0
+  query_stack: ^1.0.0
+  rxdart: ^0.27.7
+  sign_in_with_apple: ^4.3.0
+  url_launcher: ^6.1.10
+
+dev_dependencies:
+  build_runner: ^2.3.3
+  flutter_lints: ^2.0.0
+  flutter_test:
+    sdk: flutter
+  freezed: ^2.3.2
