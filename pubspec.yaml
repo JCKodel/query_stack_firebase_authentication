@@ -1,6 +1,6 @@
 name: query_stack_firebase_authentication
 description: Firebase Authentication for Query_Stack
-version: 1.0.0+2
+version: 1.0.1
 homepage: https://github.com/JCKodel/query_stack_firebase_authentication
 
 environment:
