@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_app_installations/firebase_app_installations.dart';
@@ -128,18 +125,16 @@ class AuthenticationService extends BaseService {
           principal = principal.copyWith(email: currentUser.email!);
         }
 
-        final emptyAvatar = _getEmptyAvatar(principal.email);
-
-        if (currentUser.photoURL == null && principal.avatarURL != emptyAvatar) {
+        if (currentUser.photoURL == null && principal.avatarURL.isNotEmpty) {
           await currentUser.updatePhotoURL(principal.avatarURL);
-        } else if (currentUser.photoURL != null && principal.avatarURL == emptyAvatar) {
+        } else if (currentUser.photoURL != null && principal.avatarURL.isEmpty) {
           principal = principal.copyWith(avatarURL: currentUser.photoURL!);
         }
       }
     } else {
       final displayName = currentUser.displayName ?? _unavailableDisplayName;
       final email = currentUser.email ?? _unavailableEmail;
-      final avatarURL = currentUser.photoURL ?? _getEmptyAvatar(email);
+      final avatarURL = currentUser.photoURL ?? "";
 
       principal = Principal(
         avatarURL: avatarURL,
@@ -455,17 +450,11 @@ class AuthenticationService extends BaseService {
 
     if (inAvatarURL.isNotEmpty) {
       await currentUser.updatePhotoURL(inAvatarURL);
-    } else if (currentUser.photoURL == _getEmptyAvatar(currentUser.email ?? inEmail)) {
+    } else if (currentUser.photoURL == "") {
       await currentUser.updatePhotoURL(inAvatarURL);
     }
 
     await currentUser.reload();
-  }
-
-  String _getEmptyAvatar(String email) {
-    final emailHash = md5.convert(utf8.encode(email.trim().toLowerCase())).toString();
-
-    return "https://www.gravatar.com/avatar/${emailHash}?d=identicon&r=g&s=96";
   }
 
   Future<void> signOut() async {
