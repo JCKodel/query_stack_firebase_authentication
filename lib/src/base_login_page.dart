@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:query_stack/query_stack.dart';
@@ -57,34 +56,7 @@ class BaseLoginPage extends StatefulWidget {
 }
 
 class _BaseLoginPageState extends State<BaseLoginPage> {
-  late ThemeData currentTheme;
   bool _isBusy = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    currentTheme = Theme.of(context);
-  }
-
-  @override
-  void dispose() {
-    final platformBrightness = ThemeData.estimateBrightnessForColor(currentTheme.scaffoldBackgroundColor);
-    final inverseBrightness = platformBrightness == Brightness.light ? Brightness.dark : Brightness.light;
-
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        systemNavigationBarColor: currentTheme.scaffoldBackgroundColor,
-        systemNavigationBarIconBrightness: inverseBrightness,
-        systemNavigationBarContrastEnforced: false,
-        systemStatusBarContrastEnforced: false,
-        statusBarIconBrightness: inverseBrightness,
-        statusBarBrightness: inverseBrightness,
-        statusBarColor: Colors.transparent,
-      ),
-    );
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,23 +115,6 @@ class _BaseLoginPageState extends State<BaseLoginPage> {
         style: buttonTextStyle.copyWith(color: Colors.white),
       ),
     );
-
-    if (widget.loginConfiguration.backgroundColor != null) {
-      final platformBrightness = ThemeData.estimateBrightnessForColor(widget.loginConfiguration.backgroundColor!);
-      final inverseBrightness = platformBrightness == Brightness.light ? Brightness.dark : Brightness.light;
-
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          systemNavigationBarColor: widget.loginConfiguration.backgroundColor,
-          systemNavigationBarIconBrightness: inverseBrightness,
-          systemNavigationBarContrastEnforced: false,
-          systemStatusBarContrastEnforced: false,
-          statusBarIconBrightness: inverseBrightness,
-          statusBarBrightness: inverseBrightness,
-          statusBarColor: Colors.transparent,
-        ),
-      );
-    }
 
     return Scaffold(
       backgroundColor: widget.loginConfiguration.backgroundColor,

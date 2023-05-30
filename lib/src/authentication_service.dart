@@ -54,11 +54,14 @@ class AuthenticationService extends BaseService {
   Future<void> _onAuthStateChanged(User? user) async {
     final principal = await _userToPrincipal(user);
 
-    if (_principalBehaviorSubject.hasValue == false || _principalBehaviorSubject.value != principal) {
+    if (_principalBehaviorSubject.hasValue == false ||
+        _principalBehaviorSubject.value != principal) {
       _principalBehaviorSubject.add(principal);
 
       if (user != null) {
-        FirebaseAnalytics.instance.logLogin(loginMethod: user.providerData.first.providerId).ignore();
+        FirebaseAnalytics.instance
+            .logLogin(loginMethod: user.providerData.first.providerId)
+            .ignore();
         FirebaseAnalytics.instance.setUserId(id: user.uid).ignore();
       }
     }
@@ -113,9 +116,11 @@ class AuthenticationService extends BaseService {
       principal = principal.copyWith(lastLogin: principalLogin);
 
       if (currentUser.displayName != principal.displayName) {
-        if (currentUser.displayName == null && principal.displayName != _unavailableDisplayName) {
+        if (currentUser.displayName == null &&
+            principal.displayName != _unavailableDisplayName) {
           await currentUser.updateDisplayName(principal.displayName);
-        } else if (currentUser.displayName != null && principal.displayName == _unavailableDisplayName) {
+        } else if (currentUser.displayName != null &&
+            principal.displayName == _unavailableDisplayName) {
           principal = principal.copyWith(displayName: currentUser.displayName!);
         }
 
@@ -168,11 +173,13 @@ class AuthenticationService extends BaseService {
       case NativePlatform.web:
         return _getDeviceInfoWeb(deviceInfo, authProvider);
       case NativePlatform.unknown:
-        throw UnimplementedError("${Environment.platformInfo.nativePlatform} isn't supported");
+        throw UnimplementedError(
+            "${Environment.platformInfo.nativePlatform} isn't supported");
     }
   }
 
-  Future<PrincipalLogin> _getDeviceInfoAndroid(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoAndroid(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.androidInfo;
 
     return _getDeviceInfo(
@@ -184,19 +191,21 @@ class AuthenticationService extends BaseService {
     );
   }
 
-  Future<PrincipalLogin> _getDeviceInfoiOS(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoiOS(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.iosInfo;
 
     return _getDeviceInfo(
-      model: info.model ?? info.localizedModel ?? info.name ?? info.utsname.machine ?? info.utsname.sysname ?? "ios",
-      device: info.utsname.machine ?? "ios",
-      version: info.systemVersion ?? info.utsname.machine ?? "0",
+      model: info.model,
+      device: info.utsname.machine,
+      version: info.systemVersion,
       nativePlatform: NativePlatform.ios,
       authProvider: authProvider,
     );
   }
 
-  Future<PrincipalLogin> _getDeviceInfoWindows(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoWindows(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.windowsInfo;
 
     return _getDeviceInfo(
@@ -208,7 +217,8 @@ class AuthenticationService extends BaseService {
     );
   }
 
-  Future<PrincipalLogin> _getDeviceInfoMacOS(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoMacOS(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.macOsInfo;
 
     return _getDeviceInfo(
@@ -220,7 +230,8 @@ class AuthenticationService extends BaseService {
     );
   }
 
-  Future<PrincipalLogin> _getDeviceInfoLinux(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoLinux(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.linuxInfo;
 
     return _getDeviceInfo(
@@ -232,7 +243,8 @@ class AuthenticationService extends BaseService {
     );
   }
 
-  Future<PrincipalLogin> _getDeviceInfoWeb(DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
+  Future<PrincipalLogin> _getDeviceInfoWeb(
+      DeviceInfoPlugin deviceInfo, AuthProvider authProvider) async {
     final info = await deviceInfo.webBrowserInfo;
 
     return _getDeviceInfo(
@@ -260,7 +272,8 @@ class AuthenticationService extends BaseService {
       device: device,
       version: version,
       nativePlatform: nativePlatform,
-      signInTime: FirebaseAuth.instance.currentUser?.metadata.lastSignInTime ?? DateTime.now(),
+      signInTime:
+          FirebaseAuth.instance.currentUser?.metadata.lastSignInTime ?? DateTime.now(),
     );
   }
 
@@ -318,7 +331,8 @@ class AuthenticationService extends BaseService {
             ),
     );
 
-    final displayName = [credential.givenName ?? "", credential.familyName ?? ""].join(" ").trim();
+    final displayName =
+        [credential.givenName ?? "", credential.familyName ?? ""].join(" ").trim();
     final oAuthProvider = OAuthProvider(AppleAuthProvider.PROVIDER_ID);
 
     final oAuthCredential = oAuthProvider.credential(
@@ -355,7 +369,8 @@ class AuthenticationService extends BaseService {
   }
 
   Future<void> _signInWithGoogle() async {
-    final isWebSignIn = Environment.platformInfo.nativePlatform != NativePlatform.android;
+    final isWebSignIn =
+        Environment.platformInfo.nativePlatform != NativePlatform.android;
 
     final googleSignIn = GoogleSignIn(
       scopes: <String>["email"],
@@ -374,7 +389,8 @@ class AuthenticationService extends BaseService {
     }
 
     final googleAuth = await googleUser.authentication;
-    final oAuthCredential = GoogleAuthProvider.credential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    final oAuthCredential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
     final displayName = googleUser.displayName ?? "(n/a)";
 
     await _signIn(
@@ -385,9 +401,17 @@ class AuthenticationService extends BaseService {
     );
   }
 
-  Future<void> _signIn({required OAuthCredential credential, required String inAvatarURL, required String inDisplayName, required String inEmail}) async {
+  Future<void> _signIn(
+      {required OAuthCredential credential,
+      required String inAvatarURL,
+      required String inDisplayName,
+      required String inEmail}) async {
     try {
-      await __signIn(credential: credential, inAvatarURL: inAvatarURL, inDisplayName: inDisplayName, inEmail: inEmail);
+      await __signIn(
+          credential: credential,
+          inAvatarURL: inAvatarURL,
+          inDisplayName: inDisplayName,
+          inEmail: inEmail);
     } on AuthenticationException catch (_) {
       rethrow;
     } on FirebaseAuthException catch (ex, stackTrace) {
@@ -419,7 +443,11 @@ class AuthenticationService extends BaseService {
     }
   }
 
-  Future<void> __signIn({required OAuthCredential credential, required String inAvatarURL, required String inDisplayName, required String inEmail}) async {
+  Future<void> __signIn(
+      {required OAuthCredential credential,
+      required String inAvatarURL,
+      required String inDisplayName,
+      required String inEmail}) async {
     final oAuthProvider = OAuthProvider(credential.providerId);
 
     final oAuthCredential = oAuthProvider.credential(
@@ -434,7 +462,8 @@ class AuthenticationService extends BaseService {
       await FirebaseAuth.instance.signOut();
     }
 
-    final currentUser = (await FirebaseAuth.instance.signInWithCredential(oAuthCredential)).user;
+    final currentUser =
+        (await FirebaseAuth.instance.signInWithCredential(oAuthCredential)).user;
 
     if (currentUser == null) {
       return;
